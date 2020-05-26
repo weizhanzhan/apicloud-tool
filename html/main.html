@@ -20,21 +20,12 @@
     };
     function initJpush(){
       var ajpush = api.require('ajpush');
-      var param = {alias:'user1',tags:['user']};//别名，给指定的user1推送
+      var param = {alias:'user1',tags:['user']};
+      //设置用户绑定极光推送别名
+      //解释一下，别名：是为某个用户添加的别名，一个用户一个别名。标签，多个用户可以使用同一个标签或者多个标签。
+      //这个好处在于，比如我有一条通知要向公司所有人事部门的人员都收到。那我只需要把人事部的所有人在登录时绑定他们的标签是一样的就行。又比如我只往某一个用户发送通知，其它人不必收到这个通知。那么你只需要往某一个别名发送即可。
       ajpush.bindAliasAndTags(param,function(ret) {
-        switch (ret.statusCode) {
-           case 0:
-             resolve()
-             break
-           case 6001:
-             reject({ msg: 'tag/alias无效的设置', code: 6001 })
-             break
-           case 6002:
-             reject({ msg: '推送注册超时，请重试', code: 6002 })
-             break
-           default:
-             reject({ msg: '请联系管理员', code: ret.statusCode })
-         }
+        alert(ret.statusCode)
       });
       ajpush.init(function(ret) {
         alert('初始化成功')
