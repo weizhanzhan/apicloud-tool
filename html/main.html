@@ -30,18 +30,18 @@
       ajpush.init(function(ret) {
         alert('初始化成功')
         ajpush.setListener( function (ret){
-          api.notification({
+          api.notification({//自定义消息
               vibrate: new Array(12).fill(1000),
               light: true,
               notify: {
-                title: '您有一条新信息',
+                title: '您有一条新信息啊',
                 content: ret.content,
                 extra: ret.extra || {}
               }
             })
           })
       });
-     api.addEventListener({
+     api.addEventListener({//处理自定义消息
        name: 'noticeclicked'
      }, (ret) => {
        api.stopPlay()
