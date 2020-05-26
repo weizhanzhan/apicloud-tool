@@ -7,23 +7,6 @@
     <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
     <title>Hello APP</title>
     <link rel="stylesheet" type="text/css" href="../css/api.css" />
-    <style>
-        label {
-            margin: 10px;
-            font-size: 24px;
-        }
-
-        ul {
-            margin-bottom: 10px;
-        }
-
-        ul li {
-            margin: 5px 10px;
-            padding: 5px;
-            color: #000;
-            word-wrap: break-word;
-        }
-    </style>
 </head>
 
 <body>
@@ -33,39 +16,48 @@
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript">
     apiready = function() {
-        var ver = api.version;
-        var sType = api.systemType;
-        var sVer = api.systemVersion;
-        var id = api.deviceId;
-        var model = api.deviceModel;
-        var name = api.deviceName;
-        var cType = api.connectionType;
-        var winName = api.winName;
-        var winWidth = api.winWidth;
-        var winHeight = api.winHeight;
-        var frameName = api.frameName || '';
-        var frameWidth = api.frameWidth || '';
-        var frameHeight = api.frameHeight || '';
-
-        var str = '<ul>';
-        str += '<li>引擎版本信息: ' + ver + '</li>';
-        str += '<li>系统类型: ' + sType + '</li>';
-        str += '<li>系统版本: ' + sVer + '</li>';
-        str += '<li>设备标识: ' + id + '</li>';
-        str += '<li>设备型号: ' + model + '</li>';
-        str += '<li>设备名称: ' + name + '</li>';
-        str += '<li>网络状态: ' + cType + '</li>';
-        str += '<li>主窗口名字: ' + winName + '</li>';
-        str += '<li>主窗口宽度: ' + winWidth + '</li>';
-        str += '<li>主窗口高度: ' + winHeight + '</li>';
-        str += '<li>子窗口名字: ' + frameName + '</li>';
-        str += '<li>子窗口宽度: ' + frameWidth + '</li>';
-        str += '<li>子窗口高度: ' + frameHeight + '</li>';
-        str += '</ul>';
-
-        $api.byId('sys-info').innerHTML = str;
-
+      initJpush()
     };
+    function initJpush(){
+      var ajpush = api.require('ajpush');
+      var param = {alias:'user1',tags:['user']};//别名，给指定的user1推送
+      ajpush.bindAliasAndTags(param,function(ret) {
+        switch (ret.statusCode) {
+           case 0:
+             resolve()
+             break
+           case 6001:
+             reject({ msg: 'tag/alias无效的设置', code: 6001 })
+             break
+           case 6002:
+             reject({ msg: '推送注册超时，请重试', code: 6002 })
+             break
+           default:
+             reject({ msg: '请联系管理员', code: ret.statusCode })
+         }
+      });
+      ajpush.init(function(ret) {
+        alert('初始化成功')
+        ajpush.setListener( function (ret){
+          api.notification({
+              vibrate: new Array(12).fill(1000),
+              light: true,
+              notify: {
+                title: '您有一条新信息',
+                content: ret.content,
+                extra: ret.extra || {}
+              }
+            })
+          });
+      });
+     api.addEventListener({
+       name: 'noticeclicked'
+     }, (ret) => {
+       api.stopPlay()
+       // do...
+       alert('被点击了')
+     })
+    }
 </script>
 
 </html>
