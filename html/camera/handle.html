@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no" />
+  <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="./handle.css" />
+</head>
+
+<body>
+    <div id="close" onclick="returnBack()" class="flex-center camera-back">
+      取消
+    </div>
+    <div id="take" onclick="takePhoto()" class="flex-center camera-take">
+      <div></div>
+    </div>
+    <input type="range" onchange="setZoom()" id="zoom" class="zoom-range" min="0" max="0" value="0"/>
+    <!-- <div id="zoom" class="zoom-body">
+      <div  onclick="handlerZoom(1)">+</div>
+      <div onclick="handlerZoom(0)">-</div>
+    </div> -->
+    <div id="confirm" onclick="photoConfirm()" class="flex-center camera-confirm">
+        <img src="./images/confirm.png">
+    </div>
+    <div id="cancel" onclick="photoCancel()" class="flex-center camera-cancel">
+        <img src="./images/cancel.png">
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+  var FNPhotograph;
+  var _$=function(id){
+    return document.getElementById(id)
+  }
+  var cancelDom = _$('cancel')
+  var confirmDom = _$('confirm')
+  var takeDom = _$('take')
+  var closeDom = _$('close')
+  var zoomDom = _$('zoom')
+  apiready = function () {
+    zoomDom.max = api.pageParam.zoomMax
+  };
+  function setZoom(a) {
+    api.execScript({
+      name: "main",
+      script: 'setZoom('+zoomDom.value+')'
+    });
+  }
+  function takePhoto() {
+    api.execScript({
+      name: "main",
+      script: 'takePhoto()'
+    });
+  }
+  function returnBack(){
+    api.execScript({
+      name: "main",
+      script: 'closeWin()'
+    });
+  }
+  function photoCancel(){
+    api.execScript({
+      name: "main",
+      script: 'photoCancel()'
+    });
+  }
+  function photoConfirm(){
+    api.execScript({
+      name: "main",
+      script: 'photoConfirm()'
+    });
+  }
+  function handlerZoom(flag){
+    if(flag){
+      api.execScript({
+        name: "main",
+        script: 'zoomUp()'
+      });
+    }else{
+      api.execScript({
+        name: "main",
+        script: 'zoomDown()'
+      });
+    }
+  }
+  function changState(state){
+    if(state==0){
+      takeDom.style.display = 'flex'
+      zoomDom.style.display = 'flex'
+      closeDom.style.display = 'block'
+      cancelDom.style.display = 'none'
+      confirmDom.style.display = 'none'
+    }else{
+      cancelDom.style.display = 'block'
+      confirmDom.style.display = 'block'
+      zoomDom.style.display = 'none'
+      closeDom.style.display = 'none'
+      takeDom.style.display = 'none'
+    }
+  }
+</script>
+
+</html>

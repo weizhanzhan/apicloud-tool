@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+    content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+  <meta name="format-detection" content="telephone=no, email=no, date=no, address=no" />
+  <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+  <link rel="stylesheet" type="text/css" href="./tool.css" />
+</head>
+
+<body>
+    <div onclick="handelLightState()" class="tool">
+      <img src="./images/light-auto.png" id="light">
+    </div>
+    <div onclick="handelCamera()" class="tool-camera">
+      <img src="./images/camera.png" alt="">
+    </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+  var LIGHT_OFF = 0
+  var LIGHT_ON = 1
+  var LIGHT_AUTO = 2
+  var lightDom = document.getElementById('light')
+  var lightState = LIGHT_AUTO
+  apiready = function () {
+    var state = $api.getStorage('lightState') || LIGHT_AUTO
+    lightState = parseInt(state)
+    setLightState()
+  }
+  function handelLightState(){
+    if(lightState==2){
+      lightState =  0
+    }else{
+      lightState+=1
+    }
+    setLightState()
+  }
+  function setLightState(){
+    $api.setStorage('lightState',lightState)
+    switch(lightState){
+      case 0:lightDom.src = './images/light-off.png'
+        break
+      case 1:lightDom.src = './images/light-on.png'
+        break
+      case 2:lightDom.src = './images/light-auto.png'
+        break
+    }
+    api.execScript({
+      name: "main",
+      script: 'setLightState('+lightState+')'
+    });
+  }
+  function handelCamera(){
+    api.execScript({
+      name:'main',
+      script:'handleCamera()'
+    })
+    
+  }
+</script>
+
+</html>

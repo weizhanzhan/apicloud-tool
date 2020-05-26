@@ -1,0 +1,98 @@
+html{
+  background: none !important;
+  width:100%;
+  height:100%;
+}
+body{
+  width:100%;
+  height:100%;
+  color:#fff !important;
+  background: rgba(0, 0, 0, .3) !important;
+}
+
+.flex-center{
+  display: flex;
+  display: -webkit-flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+.flex-center img{
+  width:25px;
+  height:25px;
+}
+.camera-take{
+  position: absolute;
+  top:50%;
+  left:50%;
+  width:60px;
+  height:60px;
+  margin-left:-30px;
+  margin-top:-30px;
+  border-radius: 50%;
+  border:1px solid #fff;
+  z-index:99
+}
+.camera-take>div{
+  position: relative;
+  width:50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #fff;
+  overflow: hidden;
+  z-index:1
+}
+.camera-back{
+  position: absolute;
+  top:50%;
+  margin-top:-20px;
+  left:20px;
+  width:40px;
+  height:40px;
+  color:#fff
+}
+.camera-confirm,.camera-cancel{
+  position: absolute;
+  top:50%;
+  margin-top:-20px;
+  width:40px;
+  height:40px;
+}
+.camera-confirm img,.camera-cancel img{
+  width:40px;
+  height:40px;
+}
+.camera-confirm{
+  display: none;
+  right: 17%;
+}
+.camera-cancel{
+  display: none;
+  left:17%;
+}
+.zoom-body{
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  height: 80px;
+  width: 40px;
+  right:20px;
+  top:20px
+}
+.zoom-body>div{
+  display: flex;
+  font-size: 20px;
+  align-items: center;
+  justify-content: center;
+  flex:1
+}
+.zoom-range{
+  position: absolute;
+  transform:rotate(-90deg);
+  -webkit-transform:rotate(-90deg);
+  right: 20px;
+  top:50px;
+  height: 20px;
+  width: 80px;
+}

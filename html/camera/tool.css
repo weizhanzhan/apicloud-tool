@@ -1,0 +1,34 @@
+html{
+  background: none !important;
+  width:100%;
+  height:100%;
+}
+body{
+  position: relative;
+  width:100%;
+  height:100%;
+  color:#fff !important;
+  background: rgba(0, 0, 0, .6) !important;
+}
+.tool,.tool-camera{
+  position: absolute;
+  display: flex;
+  display: -webkit-flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  width:30px;
+  height:30px;
+  overflow: hidden;
+}
+.tool{
+  left:4%;
+}
+.tool img,.tool-camera img{
+  width:22px;
+  height:22px;
+}
+.tool-camera{
+  left:18%
+}

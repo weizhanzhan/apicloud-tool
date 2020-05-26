@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+        content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no" />
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="./index.css" />
+</head>
+
+<body>
+    <span>相机准备中...</span>
+    <img id="review">
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript">
+    var IS_TAKE = 0 // 拍照
+    var TAKE_READY = 1 // 完成拍照
+    var cameraState = IS_TAKE
+    var _$ = function (id) {
+        return document.getElementById(id);
+    };
+    var imgPath = ''
+    var imgDom = _$('review')
+    var bodyDom = document.getElementsByTagName('body')[0]
+    var FNPhotograph;
+    var timer = null
+    var MaxZoom = 0
+    var zoom =0
+    apiready = function () {
+        FNPhotograph = api.require("FNPhotograph")
+        openCamera()
+        api.addEventListener({
+            name: 'resume'
+        }, function (ret, err) {
+            if (!FNPhotograph) {
+                FNPhotograph = api.require("FNPhotograph")
+            }
+            if(cameraState===IS_TAKE){
+                FNPhotograph.closeCameraView(function () {
+                    openCamera()
+                })
+            }
+
+        })
+
+    };
+
+
+    function openCamera() {
+        FNPhotograph.openCameraView({
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 'auto'
+            },
+            orientation: "portrait",
+            fixed: true
+        }, function () {
+            var dom = document.getElementsByTagName('body')[0]
+            $api.attr(imgDom,'src','')
+            FNPhotograph.getMaxZoom(function(ret){
+                MaxZoom = ret.zoom
+                api.openFrame({
+                    name: 'handle',
+                    url: './handle.html',
+                    useWKWebView: true,
+                    fixedOn: 'ui_window',
+                    bounces: false,
+                    scrollEnabled: false,
+                    rect: {
+                        x: 0,
+                        y: $api.offset(bodyDom).h - 120,
+                        w: 'auto',
+                        h: 120
+                    },
+                    pageParam: {
+                        zoomMax: MaxZoom
+                    },
+                })
+            })
+            setZoom(zoom)
+            FNPhotograph.setFocusMode({
+                focusMode: 'continue'
+            })
+            FNPhotograph.addEventListener({
+                name: 'click'
+            }, function(ret) {
+                var position = ret.rect
+                FNPhotograph.setFocusRegion({
+                    region: {
+                        x: position.x,
+                        y: position.y,
+                        w: 60,
+                        h: 60
+                    }
+                })
+                FNPhotograph.setFocusBox({
+                    box: {
+                        width: 1,
+                        color: '#ff0',
+                        maxSize: 100,
+                        autoHide:1,
+                        minSize: 60
+                    }
+                });
+                FNPhotograph.setFocusMode({
+                    focusMode: 'auto'
+                })
+                if(timer){
+                    clearTimeout(timer)
+                }else{
+                    timer = setTimeout(()=>{
+                        FNPhotograph.setFocusMode({
+                            focusMode: 'continue'
+                        })
+                    },3000)
+                }
+            });
+
+            api.openFrame({
+                name: 'tool',
+                url: './tool.html',
+                useWKWebView: true,
+                fixedOn: 'ui_window',
+                bounces: false,
+                scrollEnabled: false,
+                rect: {
+                    x: 0,
+                    y: api.safeArea.top,
+                    w: 'auto',
+                    h: 30
+                }
+            })
+        })
+    }
+
+    function takePhoto() {
+        if(cameraState==TAKE_READY){
+            return
+        }
+        cameraState = TAKE_READY
+        FNPhotograph.takePhoto({
+            qualityValue: 80,
+            path: 'fs://FNPhotograph/',
+            album: false,
+            isRotation: false
+        }, function (ret) {
+            imgPath = ret.imagePath
+            var dom = document.getElementsByTagName('body')[0]
+            $api.attr(imgDom,'src',imgPath)
+            FNPhotograph.closeCameraView()
+            changeState()
+        });
+    }
+    function photoCancel(){
+        cameraState = IS_TAKE
+        api.execScript({
+            frameName: 'tool',
+            script: 'setLightState()'
+        });
+        openCamera()
+        changeState()
+    }
+    function photoConfirm(){
+        api.sendEvent({
+            name: 'customCarmera',
+            extra: {
+                img: imgPath,
+            }
+        });
+        FNPhotograph.closeCameraView()
+        closeWin()
+    }
+    function closeWin(){
+        FNPhotograph.closeCameraView()
+        api.closeWin()
+    }
+    function setZoom(z){
+      zoom = z
+      FNPhotograph.setZoom({
+        zoom: zoom
+      });
+    }
+    function changeState(){
+        api.execScript({
+            frameName: 'handle',
+            script: 'changState('+cameraState+')'
+        })
+    }
+    function setLightState(state){
+        var state = parseInt(state)
+        var light = 'auto'
+        switch(state){
+            case 0:light = 'off'
+                break
+            case 1:light = 'on'
+                break
+            case 2:light = 'auto'
+                break
+            }
+        FNPhotograph.setFlashlight({
+            flashlight: light
+        });
+    }
+    function handleCamera(){
+    FNPhotograph.getCamera(function(ret) {
+        if (ret.status) {
+            var camera = 'back'
+            if(ret.camera=='back'){
+                camera = 'front'
+            }
+            FNPhotograph.setCamera({
+                camera: camera
+            });
+        }
+      });
+    }
+</script>
+
+</html>
